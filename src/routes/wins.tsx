@@ -23,15 +23,17 @@ export const Route = createFileRoute("/wins")({
 });
 
 function WinsPage() {
-  const { hydrated, total, perSection, highest, lowest, resetToday } = useChecklist();
+  const { hydrated, total, perSection, resetToday, streak, getStreakLabel } = useChecklist();
   const [confirmOpen, setConfirmOpen] = useState(false);
   const navigate = useNavigate();
 
   if (!hydrated) return <div className="h-screen" />;
 
-  if (total === 20) {
+  const TOTAL_HABITS = 25;
+
+  if (total === TOTAL_HABITS) {
     return (
-      <main className="px-6 pt-12">
+      <main className="px-6 pt-12 pb-24">
         <Header />
         <div
           className="mt-6 rounded-3xl px-6 py-10 text-center"
@@ -41,7 +43,7 @@ function WinsPage() {
             className="text-[11px] uppercase tracking-[0.28em]"
             style={{ color: "var(--color-rose)" }}
           >
-            20 / 20
+            {TOTAL_HABITS} / {TOTAL_HABITS}
           </div>
           <h2 className="mt-3 text-[30px] leading-[1.1]">Everything ticked today.</h2>
           <p className="mt-5 text-[15px] leading-relaxed text-foreground">
@@ -52,13 +54,16 @@ function WinsPage() {
           <p className="mt-4 text-[15px] leading-relaxed text-foreground">
             I'm really proud of you.
           </p>
+          {streak > 0 && (
+            <p className="mt-4 text-[15px] font-medium" style={{ color: "var(--color-rose)" }}>
+              {getStreakLabel(streak)}
+            </p>
+          )}
           <p className="mt-4 text-[15px] italic text-muted-foreground">
             See you tomorrow, my lovely.
           </p>
         </div>
-        <BottomButtons
-          onReset={() => setConfirmOpen(true)}
-        />
+        <BottomButtons onReset={() => setConfirmOpen(true)} />
         <ResetDialog
           open={confirmOpen}
           onCancel={() => setConfirmOpen(false)}
@@ -72,11 +77,8 @@ function WinsPage() {
     );
   }
 
-  const band = SCORE_BANDS.find((b) => total <= b.max)!;
+  const band = SCORE_BANDS.find((b) => total <= b.max) ?? SCORE_BANDS[SCORE_BANDS.length - 1];
 
-  // Re-derive highest/lowest with sensible behaviour:
-  // - highest: must have at least 1 tick, else null
-  // - lowest with tie-break: order from spec
   const sectionScores = TIE_BREAK_ORDER.map((id) => ({
     id,
     score: perSection[id],
@@ -89,7 +91,6 @@ function WinsPage() {
     ? positive.slice().sort((a, b) => b.ratio - a.ratio || a.id.localeCompare(b.id))[0].id
     : null;
 
-  // lowest: lowest ratio; tie-break by TIE_BREAK_ORDER (already sorted that way)
   let lowestSection = sectionScores[0];
   for (const s of sectionScores) {
     if (s.ratio < lowestSection.ratio) lowestSection = s;
@@ -97,70 +98,104 @@ function WinsPage() {
   const lowId = lowestSection.id;
   const lowZero = lowestSection.score === 0;
 
-  void highest;
-  void lowest;
-
   return (
-    <main className="px-6 pt-10">
+    <main className="px-6 pt-10 pb-24">
       <Header />
 
-      <div className="mt-4 text-[15px] text-muted-foreground">
-        You completed{" "}
-        <span className="font-medium text-foreground">{total} of 20</span> habits today.
-      </div>
+      {/* Streak banner */}
+      {streak > 1 && (
+        <div
+          className="mt-4 rounded-2xl px-5 py-3 text-center text-[13px] font-medium"
+          style={{ backgroundColor: "var(--color-baby)", color: "var(--color-rose)" }}
+        >
+          {getStreakLabel(streak)}
+        </div>
+      )}
 
-      <div className="mt-6 rounded-3xl bg-baby px-5 py-6">
-        <h2 className="text-[26px] leading-tight">{band.headline}</h2>
-        <p className="mt-3 text-[15px] leading-relaxed text-foreground">{band.note}</p>
-      </div>
-
-      <section className="mt-10">
-        <h3
+      {/* Score summary */}
+      <div
+        className="mt-6 rounded-3xl px-5 py-6"
+        style={{ backgroundColor: "var(--color-baby)" }}
+      >
+        <div
           className="text-[11px] uppercase tracking-[0.28em]"
           style={{ color: "var(--color-rose)" }}
         >
-          Section breakdown
-        </h3>
-        <ul className="mt-3 divide-y divide-border">
-          {TIE_BREAK_ORDER.map((id) => (
-            <li key={id} className="flex items-center justify-between py-3">
-              <span className="text-[15px]">{SECTION_TITLE[id]}</span>
-              <span className="font-display text-lg">
-                {perSection[id]}
-                <span className="text-muted-foreground">/{SECTION_TOTALS[id]}</span>
-              </span>
-            </li>
-          ))}
-        </ul>
-      </section>
+          Today's score
+        </div>
+        <h2 className="mt-2 text-[26px] leading-tight">{band.headline}</h2>
+        <p className="mt-3 text-[15px] leading-relaxed text-foreground">{band.note}</p>
+        <div className="mt-4 text-[13px] text-muted-foreground">
+          {total} of {TOTAL_HABITS} habits completed today
+        </div>
+      </div>
 
+      {/* What you nailed */}
       {topId && (
         <section className="mt-10">
-          <h3
+          <div
             className="text-[11px] uppercase tracking-[0.28em]"
             style={{ color: "var(--color-rose)" }}
           >
             What you nailed today
-          </h3>
-          <h4 className="mt-2 text-[22px]">{SECTION_TITLE[topId]}</h4>
+          </div>
+          <h3 className="mt-2 text-[22px]">{SECTION_TITLE[topId]}</h3>
           <p className="mt-2 text-[15px] leading-relaxed text-foreground">
             {NAILED_NOTE[topId]}
           </p>
         </section>
       )}
 
+      {/* Tomorrow's easiest win */}
       <section className="mt-10">
-        <h3
+        <div
           className="text-[11px] uppercase tracking-[0.28em]"
           style={{ color: "var(--color-rose)" }}
         >
-          Tomorrow's easiest win
-        </h3>
-        <h4 className="mt-2 text-[22px]">{SECTION_TITLE[lowId]}</h4>
+          Your easiest win tomorrow
+        </div>
+        <h3 className="mt-2 text-[22px]">{SECTION_TITLE[lowId]}</h3>
         <p className="mt-2 text-[15px] leading-relaxed text-foreground">
           {lowZero ? `${ZERO_PREFIX[lowId]} ` : ""}
           {TOMORROW_WIN[lowId]}
         </p>
+      </section>
+
+      {/* Section breakdown */}
+      <section className="mt-10">
+        <div
+          className="text-[11px] uppercase tracking-[0.28em]"
+          style={{ color: "var(--color-rose)" }}
+        >
+          Full breakdown
+        </div>
+        <ul className="mt-3 divide-y divide-border">
+          {TIE_BREAK_ORDER.map((id) => {
+            const score = perSection[id];
+            const of = SECTION_TOTALS[id];
+            const pct = Math.round((score / of) * 100);
+            return (
+              <li key={id} className="py-3">
+                <div className="flex items-center justify-between">
+                  <span className="text-[15px]">{SECTION_TITLE[id]}</span>
+                  <span className="font-display text-lg">
+                    {score}
+                    <span className="text-muted-foreground">/{of}</span>
+                  </span>
+                </div>
+                <div className="mt-2 h-1.5 w-full overflow-hidden rounded-full bg-border">
+                  <div
+                    className="h-full rounded-full transition-all duration-500"
+                    style={{
+                      width: `${pct}%`,
+                      backgroundColor: pct === 100 ? "var(--color-rose)" : "var(--color-rose-soft)",
+                    }}
+                  />
+                </div>
+              </li>
+            );
+          })}
+        </ul>
       </section>
 
       <BottomButtons onReset={() => setConfirmOpen(true)} />
@@ -194,7 +229,7 @@ function Header() {
 
 function BottomButtons({ onReset }: { onReset: () => void }) {
   return (
-    <div className="mt-12 flex flex-col items-center gap-3 pb-4">
+    <div className="mt-12 flex flex-col items-center gap-3">
       <Link
         to="/today"
         className="flex h-14 w-full items-center justify-center rounded-full text-[15px] font-medium tracking-wide text-primary-foreground shadow-[0_8px_24px_-12px_rgba(214,51,108,0.6)]"
