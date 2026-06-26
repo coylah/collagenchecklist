@@ -6,7 +6,7 @@ export type Habit = {
   label: string;
   helper?: string;
   examples?: string[];
-  tag?: string; // BUILD / ACTIVATE / etc.
+  tag?: string;
 };
 
 export type Section = {
@@ -64,16 +64,17 @@ export const HABITS: Habit[] = [
     helper: "Drink a little more if it's hot or you've been moving. Your skin will notice.",
   },
   {
-    id: "h-no-alcohol",
+    id: "h-hydrating-food",
     section: "hydration",
-    label: "Kept alcohol in check today",
-    helper: "Alcohol dehydrates skin from the inside out — it's one of the fastest ways to dull your glow. If you did have a drink, alternating with water helps more than you'd think.",
+    label: "Ate something hydrating today",
+    helper: "Hydration isn't just about water. Cucumber, watermelon, oranges, berries, soups — all count. A simple way to top up without even thinking about it.",
+    examples: ["Cucumber", "Watermelon", "Oranges", "Berries", "Celery", "Soup", "Melon"],
   },
   {
-    id: "h-herbal-tea",
+    id: "h-avoid-dehydrators",
     section: "hydration",
-    label: "Had a warm drink that wasn't coffee",
-    helper: "Herbal teas, warm water with lemon, even a mug of hot water — all count. A lovely way to top up hydration without really trying.",
+    label: "Stayed mindful of things that dehydrate me",
+    helper: "Excess caffeine, alcohol, salty snacks and sugary drinks all pull hydration out of your skin. No guilt here — just awareness. If you had any, a little extra water helps balance things out.",
   },
 
   // Collagen Food Day (5)
@@ -133,10 +134,10 @@ export const HABITS: Habit[] = [
     helper: "Cleanse first — always — then your evening actives and moisturiser. This is when your skin does its best repair work, so don't skip it.",
   },
   {
-    id: "s-hands-off",
+    id: "s-ritual",
     section: "skincare",
-    label: "Kept my hands off my face",
-    helper: "Picking, prodding and resting your chin on your hand all add up. Give your skin a quiet day.",
+    label: "Treated my skincare like a ritual, not a rush",
+    helper: "Took an extra minute. Massaged it in. Noticed how your skin felt. It sounds small but the intention behind what you do matters as much as what you use.",
   },
   {
     id: "s-no-impulse",
@@ -159,16 +160,16 @@ export const HABITS: Habit[] = [
     helper: "Walking absolutely counts. So does dancing in your kitchen. The goal is to move — not to punish yourself.",
   },
   {
-    id: "m-slow",
+    id: "m-pause",
     section: "movement",
-    label: "5 minutes without rushing",
-    helper: "Give your mind a few minutes to slow down. A quiet cup of tea. A few deep breaths. Sitting in the garden. Whatever works — just stop for five minutes.",
+    label: "Took an intentional pause today",
+    helper: "Not just collapsing on the sofa — but actually choosing to stop. A few slow breaths. A quiet cup of tea with your phone face down. Five minutes of not being needed by anyone. That's the one.",
   },
   {
     id: "m-sleep",
     section: "movement",
-    label: "In bed at a reasonable time",
-    helper: "Sleep is when your skin regenerates collagen, repairs damage and resets. Getting to bed by 10:30 or 11 is genuinely one of the most powerful things you can do for your skin.",
+    label: "Followed a healthy sleep routine tonight",
+    helper: "Same-ish bedtime most nights. Phone down 30 minutes before. Dim the lights. Nothing stimulating before bed. Your skin regenerates collagen while you sleep — the routine matters as much as the hours.",
   },
   {
     id: "m-future-you",
@@ -285,9 +286,9 @@ export const SCORE_BANDS = [
 export const NAILED_NOTE: Record<SectionId, string> = {
   hydration:
     "Hydration was your strongest today. It sounds boring until your skin starts to glow — then you understand why I go on about it.",
-  food: "Your plate did the work today. Build, activate, support and protect — all showing up. That's the Collagen Food Day working exactly as it should.",
+  food: "Your plate did the work today. Building collagen from the inside out is exactly what this is about.",
   skincare:
-    "Skincare consistency was on point. This is exactly where the long-term glow lives — not in the expensive bottles, but in the boring daily routine.",
+    "Skincare consistency was on point. This is exactly where the long-term glow lives — not in expensive bottles, but in the boring daily routine.",
   movement:
     "You moved your body and gave your mind some space today. That combination does more for your skin than most people realise.",
   soul: "You looked after the bit no one sees today. Your nervous system, your mood, your sense of self. That matters more than any serum.",
