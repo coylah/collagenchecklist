@@ -25,7 +25,7 @@ function Welcome() {
   if (!hydrated || state.welcomed) return null;
 
   return (
-    <main className="px-6 pt-12">
+    <main className="px-6 pt-12 pb-24">
       <div
         className="text-[11px] uppercase tracking-[0.28em]"
         style={{ color: "var(--color-rose)" }}
@@ -55,9 +55,25 @@ function Welcome() {
           Some days you'll tick loads. Some days life will happen. Both are completely
           normal, my lovely.
         </p>
+        <p>
+          Every day you show up, your Glow Run grows. Miss a day? Your glow doesn't
+          disappear overnight. Just start again.
+        </p>
       </div>
 
-      <div className="my-10 h-px w-full bg-baby" />
+      <div
+        className="my-10 rounded-2xl px-5 py-5 text-[15px] leading-relaxed"
+        style={{ backgroundColor: "var(--color-baby)" }}
+      >
+        <p className="font-medium">Five areas. Five habits each. Twenty-five tiny wins a day.</p>
+        <ul className="mt-3 space-y-1.5 text-muted-foreground">
+          <li>💧 Hydration</li>
+          <li>🥗 Collagen Food Day</li>
+          <li>✨ Skincare</li>
+          <li>🌿 Movement & Mind</li>
+          <li>🤍 Soul</li>
+        </ul>
+      </div>
 
       <h2 className="text-2xl">Save to Home Screen</h2>
       <p className="mt-2 text-[15px] leading-relaxed text-muted-foreground">
