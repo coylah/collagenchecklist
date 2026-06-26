@@ -50,7 +50,6 @@ function loadHistory(): DayRecord[] {
 
 function saveHistory(history: DayRecord[]) {
   try {
-    // Keep last 90 days only
     const trimmed = history.slice(-90);
     window.localStorage.setItem(HISTORY_KEY, JSON.stringify(trimmed));
   } catch {
@@ -66,35 +65,6 @@ function save(s: State) {
   }
 }
 
-function calcStreak(history: DayRecord[]): number {
-  if (history.length === 0) return 0;
-
-  // Sort newest first
-  const sorted = [...history].sort((a, b) => b.date.localeCompare(a.date));
-
-  // Only count days where at least 1 habit was ticked
-  const activeDays = sorted.filter((d) => d.total > 0);
-  if (activeDays.length === 0) return 0;
-
-  let streak = 0;
-  const today = todayKey();
-
-  // Build a set of all dates with activity
-  const activeDates = new Set(activeDays.map((d) => d.date));
-
-  // Walk back from today (or yesterday if today not yet ticked)
-  const startDate = activeDates.has(today) ? today : getPrevDay(today);
-  if (!activeDates.has(startDate)) return 0;
-
-  let current = startDate;
-  while (activeDates.has(current)) {
-    streak++;
-    current = getPrevDay(current);
-  }
-
-  return streak;
-}
-
 function getPrevDay(dateStr: string): string {
   const d = new Date(dateStr + "T12:00:00");
   d.setDate(d.getDate() - 1);
@@ -102,6 +72,32 @@ function getPrevDay(dateStr: string): string {
   const m = String(d.getMonth() + 1).padStart(2, "0");
   const day = String(d.getDate()).padStart(2, "0");
   return `${y}-${m}-${day}`;
+}
+
+function calcStreak(history: DayRecord[]): number {
+  if (history.length === 0) return 0;
+
+  const activeDates = new Set(
+    history.filter((d) => d.total > 0).map((d) => d.date)
+  );
+
+  if (activeDates.size === 0) return 0;
+
+  const today = todayKey();
+  const yesterday = getPrevDay(today);
+
+  // Start counting from today if they've ticked something, otherwise yesterday
+  const startDate = activeDates.has(today) ? today : activeDates.has(yesterday) ? yesterday : null;
+  if (!startDate) return 0;
+
+  let streak = 0;
+  let current = startDate;
+  while (activeDates.has(current)) {
+    streak++;
+    current = getPrevDay(current);
+  }
+
+  return streak;
 }
 
 export function getStreakLabel(streak: number): string {
@@ -137,7 +133,7 @@ export function useChecklist() {
     setHydrated(true);
   }, []);
 
-  // Daily rollover while open
+  // Daily rollover while app is open
   useEffect(() => {
     const i = setInterval(() => {
       setState((s) => {
@@ -154,16 +150,22 @@ export function useChecklist() {
     if (hydrated) save(state);
   }, [state, hydrated]);
 
-  // Save today's total to history whenever ticks change
+  // Save today's running total to history on every tick change
   useEffect(() => {
     if (!hydrated) return;
     const todayTotal = HABITS.filter((h) => state.ticks[h.id]).length;
     const today = todayKey();
+
+    // Only record if at least 1 habit ticked
+    if (todayTotal === 0) return;
+
     setHistory((prev) => {
       const existing = prev.find((d) => d.date === today);
       let updated: DayRecord[];
       if (existing) {
-        updated = prev.map((d) => (d.date === today ? { ...d, total: todayTotal } : d));
+        updated = prev.map((d) =>
+          d.date === today ? { ...d, total: todayTotal } : d
+        );
       } else {
         updated = [...prev, { date: today, total: todayTotal }];
       }
@@ -176,8 +178,30 @@ export function useChecklist() {
     setState((s) => ({ ...s, ticks: { ...s.ticks, [id]: !s.ticks[id] } }));
   }, []);
 
+  // Safe reset — saves today's score to history BEFORE wiping ticks
   const resetToday = useCallback(() => {
-    setState((s) => ({ ...s, date: todayKey(), ticks: {} }));
+    setState((s) => {
+      const todayTotal = HABITS.filter((h) => s.ticks[h.id]).length;
+      const today = todayKey();
+
+      if (todayTotal > 0) {
+        setHistory((prev) => {
+          const existing = prev.find((d) => d.date === today);
+          let updated: DayRecord[];
+          if (existing) {
+            updated = prev.map((d) =>
+              d.date === today ? { ...d, total: todayTotal } : d
+            );
+          } else {
+            updated = [...prev, { date: today, total: todayTotal }];
+          }
+          saveHistory(updated);
+          return updated;
+        });
+      }
+
+      return { ...s, date: todayKey(), ticks: {} };
+    });
   }, []);
 
   const markWelcomed = useCallback(() => {
@@ -185,6 +209,7 @@ export function useChecklist() {
   }, []);
 
   const total = HABITS.filter((h) => state.ticks[h.id]).length;
+
   const perSection = HABITS.reduce(
     (acc, h) => {
       if (state.ticks[h.id]) acc[h.section] += 1;
