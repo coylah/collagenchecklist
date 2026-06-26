@@ -196,16 +196,7 @@ export const HABITS: Habit[] = [
     section: "soul",
     label: "Did something that made me feel like me",
     helper: "Whatever makes you feel like yourself. Even five minutes of it counts.",
-    examples: [
-      "Music",
-      "Reading",
-      "Lipstick",
-      "Fresh air",
-      "Creating",
-      "Laughing",
-      "Coffee in peace",
-      "Anything.",
-    ],
+    examples: ["Music", "Reading", "Lipstick", "Fresh air", "Creating", "Laughing", "Coffee in peace", "Anything."],
   },
   {
     id: "so-connect",
@@ -283,34 +274,162 @@ export const SCORE_BANDS = [
   },
 ];
 
-export const NAILED_NOTE: Record<SectionId, string> = {
-  hydration:
+// Multiple varied responses per section — picked by day of year so they rotate
+export const NAILED_NOTES: Record<SectionId, string[]> = {
+  hydration: [
     "Hydration was your strongest today. It sounds boring until your skin starts to glow — then you understand why I go on about it.",
-  food: "Your plate did the work today. Building collagen from the inside out is exactly what this is about.",
-  skincare:
-    "Skincare consistency was on point. This is exactly where the long-term glow lives — not in expensive bottles, but in the boring daily routine.",
-  movement:
+    "You stayed hydrated today and your skin noticed. Water is the least glamorous habit and the most powerful one.",
+    "Hydration on point. This is the one habit that costs nothing and does everything.",
+    "You drank your water. I know that sounds like nothing. It's not nothing. Your skin is quietly thriving.",
+    "Hydration was your win today. The unglamorous habit that absolutely no serum can replace.",
+  ],
+  food: [
+    "Your plate did the work today. Building collagen from the inside out is exactly what this is about.",
+    "Food first — always. What you eat shows up on your skin weeks later. Today's plate was a good investment.",
+    "You fed your collagen today. Not with a powder — with actual food. That's the foundation right there.",
+    "Collagen Food Day delivered. Build, activate, support, protect — your skin got the full team today.",
+    "Your strongest section was food — and that matters more than most people realise. Keep it up.",
+  ],
+  skincare: [
+    "Skincare consistency was your win today. This is exactly where the long-term glow lives — not in the expensive bottles, but in showing up daily.",
+    "You did your skincare today. No drama, no skipping, no excuses. That's the whole secret.",
+    "Skincare on point. Boring, consistent, effective. Exactly the way I like it.",
+    "Your routine showed up today. The results from this aren't instant — but they are inevitable.",
+    "Consistent skincare beats expensive skincare every time. You proved that today.",
+  ],
+  movement: [
     "You moved your body and gave your mind some space today. That combination does more for your skin than most people realise.",
-  soul: "You looked after the bit no one sees today. Your nervous system, your mood, your sense of self. That matters more than any serum.",
+    "Movement and mind both got attention today. Your cortisol levels thank you. So does your skin.",
+    "You prioritised your body and your head today. That's not small. That's everything.",
+    "Movement was your strongest section. A walked walk, a paused pause, a moment of calm. All of it counts.",
+    "You moved. You slowed down. You looked after Future You. That's a good day.",
+  ],
+  soul: [
+    "You looked after the bit no one sees today. Your nervous system, your mood, your sense of self. That matters more than any serum.",
+    "Soul was your strongest today. The glow that comes from feeling well on the inside is the one no product can fake.",
+    "You showed up for yourself today in the quietest, most important way. Don't underestimate that.",
+    "Soul section nailed. Kindness, connection, presence — these are collagen habits too, even if they don't look like it.",
+    "You took care of the inside today. And it shows on the outside, always, eventually.",
+  ],
+};
+
+export const TOMORROW_WINS: Record<SectionId, string[]> = {
+  hydration: [
+    "Start tomorrow with water before coffee. Put a glass by the kettle tonight so it's already there waiting for you.",
+    "Tomorrow, keep a bottle of water somewhere you'll actually see it. Out of sight really does mean out of mind with hydration.",
+    "Try hitting 1 litre by lunch tomorrow. It's easier than it sounds if you start early.",
+    "Tomorrow morning — water first, everything else second. Just that one habit changes the whole day.",
+    "Fill a big bottle tonight and put it somewhere obvious for tomorrow. Future You will be grateful.",
+  ],
+  food: [
+    "Tomorrow, build your plate around Build, Activate, Support, Protect. Your collagen likes a team — not one lonely scoop of powder.",
+    "Tomorrow, try getting protein in at breakfast. It sets up your collagen synthesis for the whole day.",
+    "Add one more colour to your plate tomorrow. Just one. Greens, reds, oranges, purples — any of them count.",
+    "Tomorrow, think about your vitamin C. Berries on your porridge, peppers in your lunch — small additions, real impact.",
+    "One healthy fat tomorrow — olive oil, avocado, salmon, walnuts. Your skin barrier needs it.",
+  ],
+  skincare: [
+    "Tomorrow, just do the basics. AM routine. SPF 50. PM routine. Three steps. That's genuinely all it takes.",
+    "Tomorrow morning — cleanse, treat, moisturise, SPF. In that order. Don't skip the SPF even if it's cloudy.",
+    "Tomorrow evening, don't rush your PM routine. Give it an extra minute. Massage it in. Your skin does its best work overnight.",
+    "SPF 50 tomorrow — not SPF 30, not a tinted moisturiser with SPF. The real thing. Pop it in your bag so you can top up.",
+    "Tomorrow, treat your skincare like a ritual not a chore. Slow down for two minutes. Notice how your skin feels. It makes a difference.",
+  ],
+  movement: [
+    "Tomorrow, aim for ten minutes of morning daylight and one gentle walk. That's it. No marathon required.",
+    "Tomorrow, take one intentional pause. Not scrolling, not rushing — just five minutes of actual stillness.",
+    "Try getting outside within an hour of waking tomorrow. Even five minutes of daylight does something good for your whole day.",
+    "Tomorrow, do one thing for Future You before bed tonight. Pack the bag. Fill the bottle. Send the message. She'll thank you.",
+    "Movement tomorrow doesn't have to be a workout. A walk counts. Dancing in the kitchen counts. Just move.",
+  ],
+  soul: [
+    "Tomorrow, do one small thing just for you. Not for anyone else. Five minutes of feeling like yourself is enough.",
+    "Tomorrow, notice three things you're grateful for before you look at your phone. Tiny habit. Genuine impact.",
+    "Be a little kinder to yourself tomorrow. You wouldn't speak to a friend the way you sometimes speak to yourself.",
+    "Tomorrow, put your phone down for 20 minutes and do something that makes you feel like you. Anything counts.",
+    "Connect with someone you care about tomorrow. A message, a call, a coffee. Real connection — not a scroll.",
+  ],
+};
+
+export const ZERO_PREFIXES: Record<SectionId, string[]> = {
+  hydration: [
+    "Hydration got away from you today — it happens more than you'd think.",
+    "Water was hard to prioritise today — tomorrow, start before you do anything else.",
+    "Hydration didn't quite land today — no judgement, just a gentle nudge for tomorrow.",
+    "Today was a dry one — tomorrow, get that glass of water in before coffee.",
+    "Hydration slipped today — it's the easiest one to forget and the most worth remembering.",
+  ],
+  food: [
+    "Collagen Food Day didn't quite happen today — no judgement.",
+    "Food was tricky today — life gets in the way sometimes.",
+    "The plate didn't come together today — tomorrow is a fresh start.",
+    "Collagen foods got missed today — it happens. Back to it tomorrow.",
+    "Food section was quiet today — tomorrow, just focus on one good thing on your plate.",
+  ],
+  skincare: [
+    "Skincare took a back seat today — tomorrow is a fresh start.",
+    "The routine got skipped today — it happens. Just pick it back up tomorrow morning.",
+    "Skincare didn't happen today — no drama. AM routine tomorrow, that's all.",
+    "Today was a no-routine day — that's okay. Tomorrow, just the basics.",
+    "Skincare slipped today — tomorrow, cleanse and SPF at minimum. That's enough.",
+  ],
+  movement: [
+    "Movement & Mind didn't get a look in today — that's okay.",
+    "Today was a still one — tomorrow, even a ten minute walk counts.",
+    "Movement got missed today — no guilt. Just get outside for a bit tomorrow.",
+    "Mind and body didn't get much today — tomorrow, one intentional pause is enough.",
+    "It was a busy, still day — tomorrow, give yourself ten minutes of daylight and fresh air.",
+  ],
+  soul: [
+    "Soul got squeezed out today — you're only human.",
+    "The soul stuff got missed today — tomorrow, do one thing just for you.",
+    "Soul section was empty today — that often means you were busy looking after everyone else.",
+    "No soul habits today — tomorrow, be a little kinder to yourself. Start there.",
+    "Soul got skipped today — tomorrow, five minutes of something that makes you feel like you.",
+  ],
+};
+
+export function getNailedNote(section: SectionId, date = new Date()): string {
+  const notes = NAILED_NOTES[section];
+  const day = date.getDate() + date.getMonth() * 31;
+  return notes[day % notes.length];
+}
+
+export function getTomorrowWin(section: SectionId, date = new Date()): string {
+  const wins = TOMORROW_WINS[section];
+  const day = date.getDate() + date.getMonth() * 31 + 1;
+  return wins[day % wins.length];
+}
+
+export function getZeroPrefix(section: SectionId, date = new Date()): string {
+  const prefixes = ZERO_PREFIXES[section];
+  const day = date.getDate() + date.getMonth() * 31 + 2;
+  return prefixes[day % prefixes.length];
+}
+
+// Keep these for backwards compatibility
+export const NAILED_NOTE: Record<SectionId, string> = {
+  hydration: NAILED_NOTES.hydration[0],
+  food: NAILED_NOTES.food[0],
+  skincare: NAILED_NOTES.skincare[0],
+  movement: NAILED_NOTES.movement[0],
+  soul: NAILED_NOTES.soul[0],
 };
 
 export const TOMORROW_WIN: Record<SectionId, string> = {
-  hydration:
-    "Start tomorrow with water before coffee. Put a glass by the kettle tonight so it's already there waiting for you.",
-  food: "Tomorrow, try building your plate using Build, Activate, Support, Protect. Your collagen likes a team — not one lonely scoop of powder.",
-  skincare:
-    "Tomorrow, keep skincare boring. AM routine. SPF 50. PM routine. That's where consistency wins. And if you're hovering over another trending serum, message me first.",
-  movement:
-    "Tomorrow, aim for ten minutes of daylight and one gentle walk. That's it. No marathon required.",
-  soul: "Tomorrow, do one small thing just for you. Not for anyone else. Five minutes of feeling like yourself is enough to start.",
+  hydration: TOMORROW_WINS.hydration[0],
+  food: TOMORROW_WINS.food[0],
+  skincare: TOMORROW_WINS.skincare[0],
+  movement: TOMORROW_WINS.movement[0],
+  soul: TOMORROW_WINS.soul[0],
 };
 
 export const ZERO_PREFIX: Record<SectionId, string> = {
-  hydration: "Hydration got away from you today — it happens.",
-  food: "Collagen Food Day didn't quite land today — no judgement.",
-  skincare: "Skincare took a back seat today — tomorrow is a fresh start.",
-  movement: "Movement & Mind didn't get a look in today — that's okay.",
-  soul: "Soul got squeezed out today — you're only human.",
+  hydration: ZERO_PREFIXES.hydration[0],
+  food: ZERO_PREFIXES.food[0],
+  skincare: ZERO_PREFIXES.skincare[0],
+  movement: ZERO_PREFIXES.movement[0],
+  soul: ZERO_PREFIXES.soul[0],
 };
 
 export function todayKey(date = new Date()): string {
