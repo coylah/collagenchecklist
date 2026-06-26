@@ -3,11 +3,15 @@ import { HABITS, SECTION_TOTALS, TIE_BREAK_ORDER, todayKey, type SectionId } fro
 
 const KEY = "cc:state";
 const HISTORY_KEY = "cc:history";
+const PERSONAL_LABELS_KEY = "cc:personal-labels";
+
+const PERSONAL_WIN_COUNT = 5;
 
 type State = {
   welcomed: boolean;
   date: string;
   ticks: Record<string, boolean>;
+  personalTicks: Record<number, boolean>;
 };
 
 type DayRecord = {
@@ -15,7 +19,12 @@ type DayRecord = {
   total: number;
 };
 
-const empty = (): State => ({ welcomed: false, date: todayKey(), ticks: {} });
+const empty = (): State => ({
+  welcomed: false,
+  date: todayKey(),
+  ticks: {},
+  personalTicks: {},
+});
 
 function load(): State {
   if (typeof window === "undefined") return empty();
@@ -27,9 +36,15 @@ function load(): State {
       welcomed: !!parsed.welcomed,
       date: parsed.date ?? todayKey(),
       ticks: parsed.ticks ?? {},
+      personalTicks: parsed.personalTicks ?? {},
     };
     if (s.date !== todayKey()) {
-      return { welcomed: s.welcomed, date: todayKey(), ticks: {} };
+      return {
+        welcomed: s.welcomed,
+        date: todayKey(),
+        ticks: {},
+        personalTicks: {},
+      };
     }
     return s;
   } catch {
@@ -48,21 +63,38 @@ function loadHistory(): DayRecord[] {
   }
 }
 
+function loadPersonalLabels(): string[] {
+  if (typeof window === "undefined") return Array(PERSONAL_WIN_COUNT).fill("");
+  try {
+    const raw = window.localStorage.getItem(PERSONAL_LABELS_KEY);
+    if (!raw) return Array(PERSONAL_WIN_COUNT).fill("");
+    const parsed = JSON.parse(raw) as string[];
+    // Ensure always 5 slots
+    const result = Array(PERSONAL_WIN_COUNT).fill("");
+    parsed.forEach((v, i) => { if (i < PERSONAL_WIN_COUNT) result[i] = v; });
+    return result;
+  } catch {
+    return Array(PERSONAL_WIN_COUNT).fill("");
+  }
+}
+
+function savePersonalLabels(labels: string[]) {
+  try {
+    window.localStorage.setItem(PERSONAL_LABELS_KEY, JSON.stringify(labels));
+  } catch { /* ignore */ }
+}
+
 function saveHistory(history: DayRecord[]) {
   try {
     const trimmed = history.slice(-90);
     window.localStorage.setItem(HISTORY_KEY, JSON.stringify(trimmed));
-  } catch {
-    /* ignore */
-  }
+  } catch { /* ignore */ }
 }
 
 function save(s: State) {
   try {
     window.localStorage.setItem(KEY, JSON.stringify(s));
-  } catch {
-    /* ignore */
-  }
+  } catch { /* ignore */ }
 }
 
 function getPrevDay(dateStr: string): string {
@@ -86,8 +118,12 @@ function calcStreak(history: DayRecord[]): number {
   const today = todayKey();
   const yesterday = getPrevDay(today);
 
-  // Start counting from today if they've ticked something, otherwise yesterday
-  const startDate = activeDates.has(today) ? today : activeDates.has(yesterday) ? yesterday : null;
+  const startDate = activeDates.has(today)
+    ? today
+    : activeDates.has(yesterday)
+    ? yesterday
+    : null;
+
   if (!startDate) return 0;
 
   let streak = 0;
@@ -125,11 +161,15 @@ export function getMissedStreakMessage(streak: number): string {
 export function useChecklist() {
   const [state, setState] = useState<State>(() => empty());
   const [history, setHistory] = useState<DayRecord[]>([]);
+  const [personalLabels, setPersonalLabels] = useState<string[]>(() =>
+    Array(PERSONAL_WIN_COUNT).fill("")
+  );
   const [hydrated, setHydrated] = useState(false);
 
   useEffect(() => {
     setState(load());
     setHistory(loadHistory());
+    setPersonalLabels(loadPersonalLabels());
     setHydrated(true);
   }, []);
 
@@ -138,7 +178,7 @@ export function useChecklist() {
     const i = setInterval(() => {
       setState((s) => {
         if (s.date !== todayKey()) {
-          return { ...s, date: todayKey(), ticks: {} };
+          return { ...s, date: todayKey(), ticks: {}, personalTicks: {} };
         }
         return s;
       });
@@ -150,13 +190,12 @@ export function useChecklist() {
     if (hydrated) save(state);
   }, [state, hydrated]);
 
-  // Save today's running total to history on every tick change
+  // Save today's running total to history on every tick
   useEffect(() => {
     if (!hydrated) return;
     const todayTotal = HABITS.filter((h) => state.ticks[h.id]).length;
     const today = todayKey();
 
-    // Only record if at least 1 habit ticked
     if (todayTotal === 0) return;
 
     setHistory((prev) => {
@@ -176,6 +215,25 @@ export function useChecklist() {
 
   const toggle = useCallback((id: string) => {
     setState((s) => ({ ...s, ticks: { ...s.ticks, [id]: !s.ticks[id] } }));
+  }, []);
+
+  const togglePersonal = useCallback((index: number) => {
+    setState((s) => ({
+      ...s,
+      personalTicks: {
+        ...s.personalTicks,
+        [index]: !s.personalTicks[index],
+      },
+    }));
+  }, []);
+
+  const updatePersonalLabel = useCallback((index: number, label: string) => {
+    setPersonalLabels((prev) => {
+      const updated = [...prev];
+      updated[index] = label;
+      savePersonalLabels(updated);
+      return updated;
+    });
   }, []);
 
   // Safe reset — saves today's score to history BEFORE wiping ticks
@@ -200,7 +258,7 @@ export function useChecklist() {
         });
       }
 
-      return { ...s, date: todayKey(), ticks: {} };
+      return { ...s, date: todayKey(), ticks: {}, personalTicks: {} };
     });
   }, []);
 
@@ -246,10 +304,17 @@ export function useChecklist() {
 
   const streak = calcStreak(history);
 
+  // Personal wins scoring — only counts filled slots
+  const filledPersonalSlots = personalLabels.filter((l) => l.trim() !== "").length;
+  const tickedPersonalSlots = personalLabels.filter(
+    (l, i) => l.trim() !== "" && state.personalTicks[i]
+  ).length;
+
   return {
     hydrated,
     state,
     toggle,
+    togglePersonal,
     resetToday,
     markWelcomed,
     total,
@@ -259,5 +324,10 @@ export function useChecklist() {
     streak,
     getStreakLabel,
     getMissedStreakMessage,
+    personalLabels,
+    updatePersonalLabel,
+    filledPersonalSlots,
+    tickedPersonalSlots,
+    PERSONAL_WIN_COUNT,
   };
 }
