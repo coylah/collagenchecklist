@@ -72,6 +72,9 @@ function AboutPage() {
         <p className="mt-3 text-[15px] leading-relaxed text-muted-foreground">
           Every day you get 25 habits across five areas that genuinely support your skin, collagen and wellbeing. Tick what you've done. No judgement on what you haven't.
         </p>
+        <p className="mt-3 text-[15px] leading-relaxed text-muted-foreground">
+          The checklist resets automatically at midnight every day — you don't need to do anything. Just come back tomorrow and start fresh.
+        </p>
       </div>
 
       {/* Section preview cards */}
@@ -102,13 +105,13 @@ function AboutPage() {
         <h2 className="mt-2 text-[26px]">Make it yours</h2>
         <div className="mt-3 space-y-3 text-[15px] leading-relaxed text-foreground">
           <p>
-            At the bottom of the checklist you'll find five blank habit slots. Tap the pencil and write in anything that matters to you personally.
+            At the bottom of the checklist you'll find five blank habit slots. Tap the pencil icon next to any slot and write in a habit that matters to you personally.
           </p>
           <p>
-            These don't affect your main score — they're completely separate. They're just for you.
+            Want to change them? Just tap the pencil again anytime. Your habits don't have to stay the same — swap them out whenever you like.
           </p>
           <p>
-            Your labels save automatically and carry over each day. You can edit them anytime — keep yesterday's or start fresh whenever you like.
+            These don't affect your main score — they're completely separate and just for you. Your labels save automatically and carry over each day.
           </p>
         </div>
       </div>
@@ -130,6 +133,9 @@ function AboutPage() {
             Every day you tick at least one habit, your Glow Run grows. Day 1 starts the moment you begin.
           </p>
           <p>
+            The checklist resets at midnight automatically — so your Glow Run is measured by how many days in a row you come back and tick something. You don't need to do anything to move to the next day.
+          </p>
+          <p>
             Miss a day? Your glow doesn't disappear overnight. Just pick back up and keep going. The streak is there to encourage you, not shame you.
           </p>
           <p className="italic text-muted-foreground">
@@ -148,7 +154,7 @@ function AboutPage() {
         </div>
         <h2 className="mt-2 text-[26px]">Your daily results</h2>
         <p className="mt-3 text-[15px] leading-relaxed text-foreground">
-          Tap Glow Wins at any point in the day to see where you're up to — what you nailed, where you can focus tomorrow, and your full section breakdown. Your results are honest and encouraging whatever your score.
+          Tap Glow Wins at the end of the day to see what you nailed, where you can focus tomorrow, and your full section breakdown. Your results are honest and encouraging whatever your score.
         </p>
       </div>
 
@@ -166,7 +172,6 @@ function AboutPage() {
         </p>
 
         <div className="mt-6 space-y-4">
-          {/* iPhone instructions */}
           <div
             className="rounded-2xl px-5 py-5"
             style={{ backgroundColor: "var(--color-baby)" }}
@@ -182,7 +187,6 @@ function AboutPage() {
             </ol>
           </div>
 
-          {/* Android instructions */}
           <div
             className="rounded-2xl px-5 py-5"
             style={{ backgroundColor: "var(--color-baby)" }}
@@ -203,7 +207,14 @@ function AboutPage() {
       {/* Sign off */}
       <div className="mt-10 text-[15px] leading-relaxed text-muted-foreground italic">
         <p>Remember — consistency beats expensive. Every single time.</p>
-        <p className="mt-3" style={{ fontFamily: "Dancing Script, cursive", fontSize: "20px", color: "var(--color-rose)" }}>
+        <p
+          className="mt-3"
+          style={{
+            fontFamily: "Dancing Script, cursive",
+            fontSize: "20px",
+            color: "var(--color-rose)",
+          }}
+        >
           Love Coylah x
         </p>
       </div>
