@@ -3,12 +3,12 @@ import { Link, useRouterState } from "@tanstack/react-router";
 const items = [
   { to: "/today", label: "Today" },
   { to: "/wins", label: "Glow Wins" },
-  { to: "/save", label: "Save to Phone" },
+  { to: "/about", label: "About" },
 ] as const;
 
 export function BottomNav() {
   const pathname = useRouterState({ select: (s) => s.location.pathname });
-  // Hide on welcome (root) when not yet welcomed — root handles redirect itself.
+
   if (pathname === "/") return null;
 
   return (
