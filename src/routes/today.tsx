@@ -1,10 +1,9 @@
-import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
 import { useChecklist } from "@/lib/useChecklist";
 import { HABITS, SECTIONS, dailyMessageFor } from "@/lib/habits";
 import { HabitRow } from "@/components/HabitRow";
 import { ProgressBar } from "@/components/ProgressBar";
-import { ResetDialog } from "@/components/ResetDialog";
 
 const SECTION_ICONS: Record<string, string> = {
   hydration: "💧",
@@ -41,16 +40,12 @@ function TodayPage() {
     toggle,
     togglePersonal,
     total,
-    resetToday,
     streak,
     getStreakLabel,
     personalLabels,
     updatePersonalLabel,
     PERSONAL_WIN_COUNT,
   } = useChecklist();
-  const navigate = useNavigate();
-  const [confirmOpen, setConfirmOpen] = useState(false);
-  const [showReset, setShowReset] = useState(false);
   const [editingIndex, setEditingIndex] = useState<number | null>(null);
   const message = useMemo(() => dailyMessageFor(), []);
 
@@ -202,7 +197,7 @@ function TodayPage() {
             </div>
           </div>
           <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
-            Add up to 5 habits that matter to you. Tap the pencil to write them in. These don't affect your main score — they're just for you.
+            Add up to 5 habits that matter to you. Tap the pencil to write them in — or change them anytime. These don't affect your main score, they're just for you.
           </p>
         </div>
 
@@ -215,7 +210,6 @@ function TodayPage() {
             return (
               <li key={i} className="border-b border-border/70 last:border-b-0">
                 <div className="flex items-center gap-3 py-4 px-4">
-                  {/* Tick button — only show if label exists */}
                   {label.trim() !== "" && (
                     <button
                       type="button"
@@ -245,7 +239,6 @@ function TodayPage() {
                     </button>
                   )}
 
-                  {/* Label or input */}
                   <div className="flex-1">
                     {isEditing ? (
                       <input
@@ -254,7 +247,9 @@ function TodayPage() {
                         value={label}
                         onChange={(e) => updatePersonalLabel(i, e.target.value)}
                         onBlur={() => setEditingIndex(null)}
-                        onKeyDown={(e) => { if (e.key === "Enter") setEditingIndex(null); }}
+                        onKeyDown={(e) => {
+                          if (e.key === "Enter") setEditingIndex(null);
+                        }}
                         placeholder={`Personal habit ${i + 1}…`}
                         className="w-full text-[15px] outline-none bg-transparent"
                         style={{ color: "var(--color-foreground)" }}
@@ -270,14 +265,20 @@ function TodayPage() {
                           textDecoration: ticked ? "line-through" : "none",
                         }}
                       >
-                        <span className="text-[15px]" style={{ color: label.trim() ? "var(--color-foreground)" : "var(--color-muted-foreground)" }}>
+                        <span
+                          className="text-[15px]"
+                          style={{
+                            color: label.trim()
+                              ? "var(--color-foreground)"
+                              : "var(--color-muted-foreground)",
+                          }}
+                        >
                           {label.trim() || `Tap to add habit ${i + 1}…`}
                         </span>
                       </button>
                     )}
                   </div>
 
-                  {/* Edit pencil */}
                   {!isEditing && (
                     <button
                       type="button"
@@ -285,7 +286,16 @@ function TodayPage() {
                       className="shrink-0 text-muted-foreground/50 hover:text-muted-foreground transition-colors"
                       aria-label="Edit habit"
                     >
-                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <svg
+                        width="14"
+                        height="14"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      >
                         <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
                         <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
                       </svg>
@@ -298,8 +308,8 @@ function TodayPage() {
         </ul>
       </section>
 
-      {/* Bottom actions */}
-      <div className="mt-12 flex flex-col items-center gap-3">
+      {/* Glow Wins button */}
+      <div className="mt-12 flex flex-col items-center">
         <Link
           to="/wins"
           className="flex h-14 w-full items-center justify-center rounded-full text-[15px] font-medium tracking-wide text-primary-foreground shadow-[0_8px_24px_-12px_rgba(214,51,108,0.6)]"
@@ -307,57 +317,8 @@ function TodayPage() {
         >
           Show Today's Glow Wins
         </Link>
-
-        {/* Safe reset */}
-        <div className="mt-4 w-full border-t border-border/50 pt-4">
-          {!showReset ? (
-            <button
-              type="button"
-              onClick={() => setShowReset(true)}
-              className="w-full text-center text-xs text-muted-foreground/60 underline-offset-4 hover:underline"
-            >
-              Need to reset today?
-            </button>
-          ) : (
-            <div className="rounded-2xl border border-border/50 px-5 py-4 text-center">
-              <p className="text-[13px] text-muted-foreground">
-                This will clear today's ticks. Your Glow Run history is safe.
-              </p>
-              <div className="mt-3 flex gap-3">
-                <button
-                  type="button"
-                  onClick={() => setShowReset(false)}
-                  className="flex-1 h-10 rounded-full border border-border text-sm text-muted-foreground"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setConfirmOpen(true)}
-                  className="flex-1 h-10 rounded-full text-sm text-white"
-                  style={{ backgroundColor: "var(--color-rose)" }}
-                >
-                  Yes, reset
-                </button>
-              </div>
-            </div>
-          )}
-        </div>
       </div>
 
-      <ResetDialog
-        open={confirmOpen}
-        onCancel={() => {
-          setConfirmOpen(false);
-          setShowReset(false);
-        }}
-        onConfirm={() => {
-          resetToday();
-          setConfirmOpen(false);
-          setShowReset(false);
-          navigate({ to: "/today" });
-        }}
-      />
     </main>
   );
 }
