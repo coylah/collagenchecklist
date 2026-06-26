@@ -1,16 +1,14 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { useState } from "react";
 import { useChecklist } from "@/lib/useChecklist";
 import {
-  NAILED_NOTE,
   SCORE_BANDS,
   SECTION_TITLE,
   SECTION_TOTALS,
-  TOMORROW_WIN,
-  ZERO_PREFIX,
   TIE_BREAK_ORDER,
+  getNailedNote,
+  getTomorrowWin,
+  getZeroPrefix,
 } from "@/lib/habits";
-import { ResetDialog } from "@/components/ResetDialog";
 
 const TOTAL_HABITS = 25;
 
@@ -26,7 +24,7 @@ export const Route = createFileRoute("/wins")({
 
 function getPersonalNote(ticked: number, filled: number): string {
   if (filled === 0) return "";
-  if (ticked === 0) return "Your personal habits didn't get a look in today — that's okay. They'll be there tomorrow.";
+  if (ticked === 0) return "Your personal habits didn't get a look in today — they'll be there tomorrow.";
   if (ticked === filled) return "Every single personal habit ticked. You really showed up for yourself today.";
   if (ticked / filled >= 0.6) return `${ticked} out of ${filled} personal habits done. That's a solid effort.`;
   return `${ticked} out of ${filled} personal habits ticked. Every one counts.`;
@@ -37,14 +35,11 @@ function WinsPage() {
     hydrated,
     total,
     perSection,
-    resetToday,
     streak,
     getStreakLabel,
     filledPersonalSlots,
     tickedPersonalSlots,
   } = useChecklist();
-  const [confirmOpen, setConfirmOpen] = useState(false);
-  const navigate = useNavigate();
 
   if (!hydrated) return <div className="h-screen" />;
 
@@ -99,21 +94,12 @@ function WinsPage() {
           </div>
         )}
 
-        <BottomButtons onReset={() => setConfirmOpen(true)} />
-        <ResetDialog
-          open={confirmOpen}
-          onCancel={() => setConfirmOpen(false)}
-          onConfirm={() => {
-            resetToday();
-            setConfirmOpen(false);
-            navigate({ to: "/today" });
-          }}
-        />
+        <BottomButtons />
       </main>
     );
   }
 
-  // Normal results — honest at any score
+  // Normal results
   const band = SCORE_BANDS.find((b) => total <= b.max) ?? SCORE_BANDS[SCORE_BANDS.length - 1];
 
   const sectionScores = TIE_BREAK_ORDER.map((id) => ({
@@ -179,13 +165,13 @@ function WinsPage() {
           <h3 className="mt-2 text-[22px]">{SECTION_TITLE[topSection.id]}</h3>
           <p className="mt-2 text-[15px] leading-relaxed text-foreground">
             {topSection.score === topSection.of
-              ? NAILED_NOTE[topSection.id]
-              : `${topSection.score} out of ${topSection.of} in ${SECTION_TITLE[topSection.id]} — your strongest section today. Keep building on it.`}
+              ? getNailedNote(topSection.id)
+              : `${topSection.score} out of ${topSection.of} in ${SECTION_TITLE[topSection.id]} — your strongest section today. ${getNailedNote(topSection.id)}`}
           </p>
         </section>
       )}
 
-      {/* Multiple zeros callout */}
+      {/* Multiple zeros */}
       {zeroSections.length > 1 && (
         <section className="mt-8">
           <div
@@ -211,12 +197,12 @@ function WinsPage() {
         <h3 className="mt-2 text-[22px]">{SECTION_TITLE[lowestSection.id]}</h3>
         <p className="mt-2 text-[15px] leading-relaxed text-foreground">
           {lowestSection.score === 0
-            ? `${ZERO_PREFIX[lowestSection.id]} ${TOMORROW_WIN[lowestSection.id]}`
-            : TOMORROW_WIN[lowestSection.id]}
+            ? `${getZeroPrefix(lowestSection.id)} ${getTomorrowWin(lowestSection.id)}`
+            : getTomorrowWin(lowestSection.id)}
         </p>
       </section>
 
-      {/* Personal Wins — separate section, doesn't affect main score */}
+      {/* Personal Wins */}
       {filledPersonalSlots > 0 && (
         <section className="mt-10">
           <div
@@ -278,17 +264,7 @@ function WinsPage() {
         </ul>
       </section>
 
-      <BottomButtons onReset={() => setConfirmOpen(true)} />
-
-      <ResetDialog
-        open={confirmOpen}
-        onCancel={() => setConfirmOpen(false)}
-        onConfirm={() => {
-          resetToday();
-          setConfirmOpen(false);
-          navigate({ to: "/today" });
-        }}
-      />
+      <BottomButtons />
     </main>
   );
 }
@@ -307,7 +283,7 @@ function Header() {
   );
 }
 
-function BottomButtons({ onReset }: { onReset: () => void }) {
+function BottomButtons() {
   return (
     <div className="mt-12 flex flex-col items-center gap-3">
       <Link
@@ -317,13 +293,6 @@ function BottomButtons({ onReset }: { onReset: () => void }) {
       >
         Back to Checklist
       </Link>
-      <button
-        type="button"
-        onClick={onReset}
-        className="h-12 text-sm text-muted-foreground underline-offset-4 hover:underline"
-      >
-        Start New Day
-      </button>
     </div>
   );
 }
