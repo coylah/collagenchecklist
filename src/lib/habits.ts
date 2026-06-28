@@ -223,7 +223,7 @@ export const SECTION_TOTALS: Record<SectionId, number> = HABITS.reduce(
 export const DAILY_MESSAGES = [
   "Morning, my lovely. Let's build your glow.",
   "Water before coffee.",
-  "Tiny habits. Big difference.",
+  "Age Slow & Glow. Love Coylah.",
   "SPF first. Everything else second.",
   "One good choice still counts.",
   "Consistency beats expensive.",

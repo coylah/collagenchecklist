@@ -36,10 +36,9 @@ export function WelcomePage() {
         The Collagen
         <br />
         Checklist
-        <span className="align-top text-base">™</span>
       </h1>
       <p className="mt-4 text-lg italic text-muted-foreground">
-        Tiny habits. Big difference.
+        Age Slow & Glow. Love Coylah.
       </p>
 
       <div className="mt-8 space-y-4 text-[15px] leading-relaxed text-foreground">
@@ -49,7 +48,7 @@ export function WelcomePage() {
         </p>
         <p>
           This checklist isn't about perfection. It's about helping you remember the boring
-          basics that quietly make the biggest difference.
+          basics that make the biggest difference.
         </p>
       </div>
 
@@ -173,10 +172,9 @@ function Welcome() {
         The Collagen
         <br />
         Checklist
-        <span className="align-top text-base">™</span>
       </h1>
       <p className="mt-4 text-lg italic text-muted-foreground">
-        Tiny habits. Big difference.
+        Age Slow & Glow. Love Coylah.
       </p>
 
       <div className="mt-8 space-y-4 text-[15px] leading-relaxed text-foreground">
@@ -186,7 +184,7 @@ function Welcome() {
         </p>
         <p>
           This checklist isn't about perfection. It's about helping you remember the boring
-          basics that quietly make the biggest difference.
+          basics that make the biggest difference.
         </p>
       </div>
 
