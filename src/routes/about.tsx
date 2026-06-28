@@ -42,10 +42,9 @@ function AboutPage() {
         The Collagen
         <br />
         Checklist
-        <span className="align-top text-base">™</span>
       </h1>
       <p className="mt-4 text-lg italic text-muted-foreground">
-        Tiny habits. Big difference.
+        Age Slow & Glow. Love Coylah.
       </p>
 
       {/* Intro */}
@@ -56,7 +55,7 @@ function AboutPage() {
         </p>
         <p>
           This checklist isn't about perfection. It's about helping you remember the boring
-          basics that quietly make the biggest difference.
+          basics that make the biggest difference.
         </p>
       </div>
 
@@ -108,7 +107,7 @@ function AboutPage() {
             At the bottom of the checklist you'll find five blank habit slots. Tap the pencil icon next to any slot and write in a habit that matters to you personally.
           </p>
           <p>
-            Want to change them? Just tap the pencil again anytime. Your habits don't have to stay the same — swap them out whenever you like.
+            Want to change them? Just tap the pencil again anytime. Your habits don't have to stay the same — swap them out whenever you like. It could even be to remember to take the bins out, or not kill your boss, it's your space.&nbsp;
           </p>
           <p>
             These don't affect your main score — they're completely separate and just for you. Your labels save automatically and carry over each day.
