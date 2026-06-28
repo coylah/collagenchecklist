@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as WinsRouteImport } from './routes/wins'
 import { Route as TodayRouteImport } from './routes/today'
 import { Route as SaveRouteImport } from './routes/save'
+import { Route as AboutRouteImport } from './routes/about'
 import { Route as IndexRouteImport } from './routes/index'
 
 const WinsRoute = WinsRouteImport.update({
@@ -29,6 +30,11 @@ const SaveRoute = SaveRouteImport.update({
   path: '/save',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AboutRoute = AboutRouteImport.update({
+  id: '/about',
+  path: '/about',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
@@ -37,12 +43,14 @@ const IndexRoute = IndexRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/about': typeof AboutRoute
   '/save': typeof SaveRoute
   '/today': typeof TodayRoute
   '/wins': typeof WinsRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/about': typeof AboutRoute
   '/save': typeof SaveRoute
   '/today': typeof TodayRoute
   '/wins': typeof WinsRoute
@@ -50,20 +58,22 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/about': typeof AboutRoute
   '/save': typeof SaveRoute
   '/today': typeof TodayRoute
   '/wins': typeof WinsRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/save' | '/today' | '/wins'
+  fullPaths: '/' | '/about' | '/save' | '/today' | '/wins'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/save' | '/today' | '/wins'
-  id: '__root__' | '/' | '/save' | '/today' | '/wins'
+  to: '/' | '/about' | '/save' | '/today' | '/wins'
+  id: '__root__' | '/' | '/about' | '/save' | '/today' | '/wins'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AboutRoute: typeof AboutRoute
   SaveRoute: typeof SaveRoute
   TodayRoute: typeof TodayRoute
   WinsRoute: typeof WinsRoute
@@ -92,6 +102,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SaveRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/about': {
+      id: '/about'
+      path: '/about'
+      fullPath: '/about'
+      preLoaderRoute: typeof AboutRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -104,6 +121,7 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AboutRoute: AboutRoute,
   SaveRoute: SaveRoute,
   TodayRoute: TodayRoute,
   WinsRoute: WinsRoute,
@@ -111,3 +129,13 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}
